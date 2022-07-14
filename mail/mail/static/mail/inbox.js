@@ -35,9 +35,14 @@ function read_email(id) {
 
 
 
-  document.querySelector('#compose-recipients').value = '';
-  document.querySelector('#compose-subject').value = '';
-  document.querySelector('#compose-body').value = '';
+  fetch(`/emails/${id}`)
+.then(response => response.json())
+.then(email => {
+
+    console.log(email);
+    fill_in_values(email.sender, email.subject, email.body)
+
+});
 
 
 
@@ -110,6 +115,7 @@ function listenElement(ele, id, bool) {
     }
     element.addEventListener('click', function() {
         console.log(this.id)
+        read_email(this.id)
 
         });
     return element
@@ -142,6 +148,9 @@ function send_email () {
 }
 
 function fill_in_values(sender, subject, value) {
+
+    
+
 
     document.querySelector('#email-sender').value = sender;
     document.querySelector('#email-subject').value = subject;
