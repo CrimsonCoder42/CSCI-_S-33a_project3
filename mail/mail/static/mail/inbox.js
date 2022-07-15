@@ -74,6 +74,8 @@ function load_mailbox(mailbox) {
 
 function emailListDisplay(data) {
 
+//Extract ID, sender, subject, timestamp, emails read
+
     let emails = data
     let emailID = emails.id
     let sender = emails.sender
@@ -81,9 +83,12 @@ function emailListDisplay(data) {
     let timestamp = emails.timestamp
     let read = emails.read
 
+//add classes in the loop below
     let classes = ["mb-0 text-muted","text-dark", "text-muted" ]
     let content = [sender, subject, timestamp]
 
+
+// check to see if the tr elements already exist if not create, if they do delete
     var elementID =  document.getElementById(emailID);
     if(typeof(elementID) != 'undefined' && elementID != null){
 
@@ -93,6 +98,7 @@ function emailListDisplay(data) {
 	let element = listenElement("tr", emailID, read);
     document.querySelector('#emails').append(element);
 
+//generate and appendChild td and span, all info to span.
     for(let i = 0; i < 3; i++) {
         let tdId = `td${i}`+ emailID
         const td = createElement("td", tdId)
@@ -106,7 +112,7 @@ function emailListDisplay(data) {
 
 }
 
-
+// creates/returns elements and adds an event listener
 function listenElement(ele, id, bool) {
     const element = document.createElement(ele);
     element.id = id
@@ -121,6 +127,7 @@ function listenElement(ele, id, bool) {
     return element
 }
 
+//creates/returns a function without event listener
 function createElement(ele, id) {
     const element = document.createElement(ele);
     element.id = id
@@ -148,9 +155,7 @@ function send_email () {
 }
 
 function fill_in_values(sender, subject, value) {
-
-    
-
+// takes in all info to populate email clicked called on line 43
 
     document.querySelector('#email-sender').value = sender;
     document.querySelector('#email-subject').value = subject;
