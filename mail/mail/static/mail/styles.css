@@ -50,3 +50,10 @@ textarea {
 .font-light {
     font-weight: 300;
 }
+
+#email-body {
+    background-color:white;
+    border:none;
+    width: 100%;
+    padding-top 30px;
+}
