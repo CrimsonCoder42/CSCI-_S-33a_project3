@@ -67,9 +67,6 @@ function read_email(id) {
 
         });
 
-
-
-
 }
 
 function load_mailbox(mailbox) {
@@ -106,7 +103,7 @@ function emailListDisplay(data) {
     let subject = emails.subject
     let timestamp = emails.timestamp
     let read = emails.read
-    let archive = emails.archive
+    let archive = emails.archived
 
 
     //add classes in the loop below
@@ -121,65 +118,68 @@ function emailListDisplay(data) {
         elementID.remove()
     }
 
-    let element = listenElement("tr", emailID, read);
+    let element = createElement("tr", emailID, read);
     document.querySelector('#emails').append(element);
 
     //generate and appendChild td and span, all info to span.
     for (let i = 0; i < 3; i++) {
-        let tdId = `td${i}` + emailID
+        var tdId = `td${i}` + emailID
         const td = createElement("td", tdId)
         document.getElementById(emailID).appendChild(td)
         spanID = tdId + "span" + i
-        const span1 = createElement("span", spanID)
+        const span1 = listenElement("a", spanID, archive, emailID)
         span1.className = classes[i]
         span1.innerHTML = content[i]
         document.getElementById(tdId).appendChild(span1);
-        spanID = tdId + "span2" + i
-        const span2 = listenElement("span", spanID, archive)
-        span2.className = "table email-table no-wrap table-hover v-middle mb-0 font-14"
     }
+
+        btnID = tdId + "btn"
+        const span2 = listenElement("button", btnID, archive, emailID)
+        span2.className = "btn btn-primary btn-sm"
+        span2.innerText = "Archive"
+        document.getElementById(tdId).append(span2);
 
 }
 
 // creates/returns elements and adds an event listener effects color based on bool
-function listenElement(ele, id, bool) {
+function listenElement(ele, id, bool, att) {
 
-    if (ele == "span") {
+    if (ele == "button") {
         const element = document.createElement(ele);
         element.id = id
         element.bool = bool
+        element.setAttribute('data-index', att)
 
         element.addEventListener('click', function () {
-        console.log(this.id, this.bool)
-        read_email(this.id, this.bool)
+        console.log(this.id, this.bool, this.dataset.index)
+        archive(this.dataset.index, this.bool)
 
         });
         return element
     }
 
-
     const element = document.createElement(ele);
-    element.id = id
+    element.classes = id
     element.bool = bool
+    element.setAttribute('data-index', att)
 
-    if (bool == false) {
-        element.style.backgroundColor = '#E6E6E3'
-    }
 
-//    if (ele == )
     element.addEventListener('click', function () {
-        console.log(this.id, this.bool)
-        read_email(this.id)
+        console.log(this.dataset.index, this.bool)
+        read_email(this.dataset.index)
 
     });
     return element
 }
 
 //creates/returns an element without event listener
-function createElement(ele, id) {
+function createElement(ele, id, bool) {
     const element = document.createElement(ele);
     element.id = id
 
+    if (bool == false) {
+        element.style.backgroundColor = '#E6E6E3'
+    }
     return element
 }
 
@@ -226,14 +226,13 @@ function archive(id, bool) {
 
     let newBool = bool == true ? false : true;
 
-    fetch(`/emails/${data.id}`, {
+    fetch(`/emails/${id}`, {
         method: 'PUT',
         body: JSON.stringify({
             archived: newBool
         })
       })
+
+    load_mailbox('inbox');
     }
 
-load_mailbox('inbox');
-
-}
