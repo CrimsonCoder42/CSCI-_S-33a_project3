@@ -25,7 +25,6 @@ function compose_email() {
     document.querySelector('#compose-body').value = '';
 }
 
-
 // takes all info from values and passes to API when promised is finished it loads sent mailbox
 function send_email() {
 
@@ -39,9 +38,7 @@ function send_email() {
         })
         .then(response => response.json())
         .then(result => {
-
             load_mailbox('sent')
-
         });
 
 }
@@ -49,7 +46,7 @@ function send_email() {
 
 function read_email(id) {
     let currentHeader = document.querySelector('#view-type').innerText
-    console.log(currentHeader)
+
     // Show compose view and hide other views
     document.querySelector('#emails-view').style.display = 'block';
     document.querySelector('#emails-list').style.display = 'none';
@@ -62,12 +59,8 @@ function read_email(id) {
     fetch(`/emails/${id}`)
         .then(response => response.json())
         .then(email => {
-
-            console.log(email);
             fill_in_values(email)
-
         });
-
 }
 
 function load_mailbox(mailbox) {
@@ -80,7 +73,7 @@ function load_mailbox(mailbox) {
     // Show the mailbox name
     document.querySelector('#view-type').innerHTML = `<h3>${mailbox.charAt(0).toUpperCase() + mailbox.slice(1)}</h3>`;
 
-
+// load_mailbox calls functions below to generate view of email list. Each list is a different view for a cleaner interface.
     if (mailbox == 'inbox') {
         inbox()
     } else if (mailbox == 'sent') {
@@ -88,16 +81,14 @@ function load_mailbox(mailbox) {
     } else if(mailbox == 'archive') {
         archive()
     }
-
 }
 
-//reply button function
+//reply button, function takes innerText and value elements and replaces in compose email.
 function reply() {
 
     let senderEmail = document.querySelector('#email-sender').innerText
     let subject = document.querySelector('#email-subject').innerText
     let body = document.getElementById('email-body').value
-    console.log(body)
     let datetime = document.querySelector('#dateTime').innerText
     compose_email()
     document.querySelector('#compose-recipients').value = senderEmail
@@ -115,43 +106,9 @@ function inbox(){
     fetch('/emails/inbox')
         .then(response => response.json())
         .then(emails => {
-
             emails.forEach(email => {
-                console.log(email)
-
-
-                let classes = ["mb-0 text-muted", "text-dark", "text-muted"]
-                let content = [email.sender, email.subject, email.timestamp]
-
-
-    // check to see if the tr elements already exist if not create, if they do delete.
-                var elementID = document.getElementById(`inbox${email.id}`);
-                if (typeof (elementID) != 'undefined' && elementID != null) {
-
-                        elementID.remove()
-                }
-
-                let inboxID = `inbox${email.id}`
-                let element = createElement("tr", inboxID, email.read);
-                document.querySelector('#inbox_emails').append(element);
-                for (let i = 0; i < 3; i++) {
-                    var tdId = `td${i}` + email.id + "input"
-                    const td = createElement("td", tdId)
-                    document.getElementById(inboxID).appendChild(td)
-                    spanID = tdId + "span" + i
-                    const span1 = listenElement("a", spanID, email.archived, email.id)
-                    span1.className = classes[i]
-                    span1.innerHTML = content[i]
-                    document.getElementById(tdId).appendChild(span1);
-                }
-
-               btnID = tdId + "btn"
-               const archiveButton = listenElement("button", btnID, email.archived, email.id)
-               archiveButton.className = "btn btn-primary btn-sm"
-               archiveButton.innerText = "Archive"
-               document.getElementById(tdId).append(archiveButton);
+                createList(email, 'inbox', '#inbox_emails')
             })
-
         });
 }
 
@@ -165,42 +122,11 @@ function sent(){
     fetch('/emails/sent')
         .then(response => response.json())
         .then(emails => {
-
             emails.forEach(email => {
-                console.log(email)
-
-
-                let classes = ["mb-0 text-muted", "text-dark", "text-muted"]
-                let content = [email.recipients, email.subject, email.timestamp]
-
-
-    // check to see if the tr elements already exist if not create, if they do delete.
-                var elementID = document.getElementById(`sent${email.id}`);
-                if (typeof (elementID) != 'undefined' && elementID != null) {
-
-                        elementID.remove()
-                }
-
-                let sentID = `sent${email.id}`
-                let element = createElement("tr", sentID, email.read);
-                document.querySelector('#sent_emails').append(element);
-                for (let i = 0; i < 3; i++) {
-                    var tdId = `td${i}` + sentID + "sent"
-                    const td = createElement("td", tdId)
-                    document.getElementById(sentID).appendChild(td)
-                    spanID = tdId + "span" + i
-                    const span1 = listenElement("a", spanID, email.archived, email.id)
-                    span1.className = classes[i]
-                    span1.innerHTML = content[i]
-                    document.getElementById(tdId).appendChild(span1);
-                }
-
-
+                createList(email, 'sent', '#sent_emails')
             })
-
         });
 }
-
 
 
 function archive(){
@@ -211,28 +137,34 @@ function archive(){
     fetch('/emails/archive')
         .then(response => response.json())
         .then(emails => {
-
             emails.forEach(email => {
-                console.log(email)
+                createList(email, 'archive', '#archive_emails')
+            })
+        });
+}
 
+//abstracts out the rows and emails for each view for code reduction.
+function createList(email, name, querySelect) {
+
+                // classes and content linked to each email row
                 let classes = ["mb-0 text-muted", "text-dark", "text-muted"]
                 let content = [email.sender, email.subject, email.timestamp]
 
-
-    // check to see if the tr elements already exist if not create, if they do delete.
-                var elementID = document.getElementById(`archive${email.id}`);
+                // check to see if the tr elements already exist if not create, if they do delete.
+                var elementID = document.getElementById(`name${email.id}`);
                 if (typeof (elementID) != 'undefined' && elementID != null) {
 
                         elementID.remove()
                 }
 
-                let archiveID = `archive${email.id}`
-                let element = createElement("tr", archiveID, email.read);
-                document.querySelector('#archive_emails').append(element);
+                // creates a row for each email and fills in info depending on pramas
+                let nameID = `name${email.id}`
+                let element = createElement("tr", nameID, email.read);
+                document.querySelector(querySelect).append(element);
                 for (let i = 0; i < 3; i++) {
-                    var tdId = `td${i}` + email.id + "archive"
+                    var tdId = `td${i}` + email.id + name
                     const td = createElement("td", tdId)
-                    document.getElementById(archiveID).appendChild(td)
+                    document.getElementById(nameID).appendChild(td)
                     spanID = tdId + "span" + i
                     const span1 = listenElement("a", spanID, email.archived, email.id)
                     span1.className = classes[i]
@@ -240,19 +172,27 @@ function archive(){
                     document.getElementById(tdId).appendChild(span1);
                 }
 
-               btnID = tdId + "btn"
-               const archiveButton = listenElement("button", btnID, email.archived, email.id)
-               archiveButton.className = "btn btn-primary btn-sm"
-               archiveButton.innerText = "Unarchive"
-               document.getElementById(tdId).append(archiveButton);
-            })
+                // makes sure archive button is added Only for archive and inbox.
+                if(name == 'archive' || name == 'inbox'){
 
-        });
+                    let buttonTitle = 'archive'
+
+                //checks to make sure archive get a different button title
+                    if (name == 'archive') {
+                        buttonTitle = 'Unarchive'
+                    }
+
+                    btnID = tdId + "btn"
+                    const archiveButton = listenElement("button", btnID, email.archived, email.id)
+                    archiveButton.className = "btn btn-primary btn-sm"
+                    archiveButton.innerText = buttonTitle
+                    document.getElementById(tdId).append(archiveButton);
+
+                }
+
 }
 
-
-
-// creates/returns elements and adds an event listener effects color based on bool
+// creates/returns elements and adds an event listener effects color based on bool and sets data attribute
 function listenElement(ele, id, bool, att) {
 
     if (ele == "button") {
@@ -273,7 +213,6 @@ function listenElement(ele, id, bool, att) {
     element.classes = id
     element.bool = bool
     element.setAttribute('data-index', att)
-
 
     element.addEventListener('click', function () {
         console.log(this.dataset.index, this.bool)
@@ -298,41 +237,26 @@ function fill_in_values(data) {
     // takes in all info to populate email clicked called on line 43
     let header = document.querySelector('#view-type').innerText
 
-    let timeDate = data.timestamp
-    let body = data.body
-    let subject = data.subject
-    let sender = data.sender
     let receiver = data.recipients
-
-//if the main title says Sent Email we load the sent format else we load the inbox format
+    let whoSent = data.sender
 
     if (header == "Sent Email"){
+        whoSent =  "Me"
+    }
+        document.querySelector('#email-sender').innerText = whoSent;
+        document.querySelector('#email-receiver').innerText = whoSent;
+        document.querySelector('#dateTime').innerText = data.timestamp;
+        document.querySelector('#email-subject').innerText = data.subject;
+        document.querySelector('#email-body').value = data.body;
 
-        document.querySelector('#email-sender').innerText = "Me";
-        document.querySelector('#email-receiver').innerText = sender;
-        document.querySelector('#dateTime').innerText = timeDate;
-        document.querySelector('#email-subject').innerText = subject;
-        document.querySelector('#email-body').value = body;
-
-    } else {
-
-        document.querySelector('#email-sender').innerText = sender;
-        document.querySelector('#email-receiver').innerText = "Me";
-        document.querySelector('#dateTime').innerText = timeDate;
-        document.querySelector('#email-subject').innerText = subject;
-        document.querySelector('#email-body').value = body;
-
-
+    // updates read for particular email
      fetch(`/emails/${data.id}`, {
         method: 'PUT',
         body: JSON.stringify({
             read: false
         })
       })
-    }
-
 }
-
 
 // Once an email has been archived or unarchived, load the user’s inbox. Since inbox defaults simple reload location.reload() is cleaner.
 function archiveEmail(id, bool) {
@@ -345,8 +269,6 @@ function archiveEmail(id, bool) {
             archived: newBool
             })
         }).then( location.reload() )
-
-
     }
 
 
