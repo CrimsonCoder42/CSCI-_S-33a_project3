@@ -66,33 +66,43 @@
                             <table class="table email-table no-wrap table-hover v-middle mb-0 font-14">
                                 <tbody>
                                     <tr>
-                                        <td>
-                                            <span class="mb-0 text-muted">From</span>
-                                        </td>
-                                        <td>
-                                                <span class="text-dark">Subject</span>
-                                        </td>
-                                        <td style="margin-left: 50px;" class="text-muted">Date
+                                        <td id="toFrom">From</td>
 
-                                        </td>
+                                        <td>Subject </td>
 
+                                        <td class="text-muted">Date</td>
 
                                     </tr>
                                     <!-- row -->
                                 </tbody>
                             </table>
-
+                            </div>
+                            <div class="table-responsive">
                             <table class="table email-table no-wrap table-hover v-middle mb-0 font-14">
-                                <tbody id="emails">
+                                <tbody id="inbox_emails">
+                                </tbody>
+
+                            </table>
+                                </div>
+                            <div class="table-responsive">
+                            <table class="table email-table no-wrap table-hover v-middle mb-0 font-14">
+                                <tbody id="sent_emails">
+
+                                </tbody>
+
+                            </table>
+                                </div>
+
+                            <div class="table-responsive">
+                            <table class="table email-table no-wrap table-hover v-middle mb-0 font-14">
+                                <tbody id="archive_emails">
 
                                 </tbody>
                             </table>
+                                </div>
                         </div>
                     </div>
                 </div>
-
-            </div>
-
 
         </div>
 
@@ -164,7 +174,7 @@
                     </div>
                     <div class="icons">
                         <div id="dateTime" class="date">Nov 20, 11:20</div>
-                        <a href="#" class="icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-trash text-muted" data-toggle="tooltip" title="" data-original-title="Delete"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                        <a href="#" id= "email_replay" class="icon">Reply</a>
                       </a>
                     </div>
                   </div>
@@ -182,7 +192,7 @@
             <hr>
             <br>
 
-              <div class="email-body">
+              <div class="email-body-div">
                 <textarea  disabled class="form-control" id="email-body" ></textarea>
               </div>
               <div class="email-attachments">
